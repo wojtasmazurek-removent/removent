@@ -1,42 +1,559 @@
-
 <!DOCTYPE html>
-
 <html lang="pl">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+  <title>Protokół</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<title>Protokół</title>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f2f4f7;
+      color: #17202a;
+    }
 
-<style>
+    .app {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-* {
+    .header {
+      background: #17202a;
+      color: white;
+      padding: 24px;
+      border-radius: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.12);
+    }
 
-    box-sizing: border-box;
+    .header h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
 
-}
+    .header p {
+      margin: 0;
+      opacity: .75;
+      font-size: 14px;
+    }
 
-body {
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.07);
+    }
 
-    margin: 0;
+    .card h2 {
+      margin: 0 0 18px;
+      font-size: 19px;
+    }
 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
 
-    background: #f2f4f7;
+    .field {
+      margin-bottom: 14px;
+    }
 
-    color: #17202a;
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 600;
+      font-size: 14px;
+    }
 
-}
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid #d5dbe1;
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 16px;
+      font-family: inherit;
+      background: #fafbfc;
+      color: #17202a;
+      outline: none;
+    }
 
-.app {
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #2878f0;
+      box-shadow: 0 0 0 3px rgba(40,120,240,.12);
+    }
 
-    max-width: 650px;
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
 
-    margin: auto;
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0;
+      font-weight: 500;
+    }
 
-    min-height: 100vh;
+    .checkbox input {
+      width: 20px;
+      height: 20px;
+    }
 
-    background: white
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 13px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .primary {
+      background: #2878f0;
+      color: white;
+    }
+
+    .secondary {
+      background: #e9edf2;
+      color: #17202a;
+    }
+
+    button:active {
+      transform: scale(.98);
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .protocol {
+      border: 2px solid #17202a;
+      padding: 22px;
+      background: white;
+      border-radius: 12px;
+    }
+
+    .protocol-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .protocol-line {
+      border-bottom: 1px solid #c9ced4;
+      padding: 8px 0;
+      margin-bottom: 8px;
+    }
+
+    .protocol-label {
+      font-weight: 700;
+    }
+
+    .protocol-description {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    .status.ok {
+      background: #dff7e7;
+      color: #176b36;
+    }
+
+    .status.bad {
+      background: #ffe1e1;
+      color: #9b2020;
+    }
+
+    .footer {
+      text-align: center;
+      color: #7b858f;
+      font-size: 13px;
+      padding: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        padding: 12px;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .header,
+      .form-section,
+      .buttons,
+      .footer {
+        display: none !important;
+      }
+
+      .app {
+        max-width: none;
+        padding: 0;
+      }
+
+      .card {
+        box-shadow: none;
+        padding: 0;
+      }
+
+      .result {
+        display: block !important;
+      }
+
+      .protocol {
+        border: 2px solid #000;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <h1>Protokół</h1>
+    <p>Formularz do tworzenia i drukowania protokołu</p>
+  </div>
+
+  <div class="card form-section">
+
+    <h2>Dane protokołu</h2>
+
+    <div class="row">
+
+      <div class="field">
+        <label for="date">Data</label>
+        <input type="date" id="date">
+      </div>
+
+      <div class="field">
+        <label for="place">Miejsce</label>
+        <input type="text" id="place" placeholder="np. Warszawa">
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="field">
+        <label for="person">Osoba / firma</label>
+        <input type="text" id="person" placeholder="Imię i nazwisko lub nazwa firmy">
+      </div>
+
+      <div class="field">
+        <label for="number">Numer protokołu</label>
+        <input type="text" id="number" placeholder="np. 001/2026">
+      </div>
+
+    </div>
+
+    <div class="field">
+      <label for="subject">Przedmiot protokołu</label>
+      <input type="text" id="subject" placeholder="Czego dotyczy protokół?">
+    </div>
+
+    <div class="field">
+      <label for="description">Opis / uwagi</label>
+      <textarea id="description" placeholder="Wpisz szczegóły protokołu..."></textarea>
+    </div>
+
+    <label class="checkbox">
+      <input type="checkbox" id="accepted">
+      <span>Protokół został zaakceptowany</span>
+    </label>
+
+    <div class="buttons">
+      <button class="primary" onclick="generateProtocol()">
+        Utwórz protokół
+      </button>
+
+      <button class="secondary" onclick="clearForm()">
+        Wyczyść
+      </button>
+    </div>
+
+  </div>
+
+  <div class="card result" id="result">
+
+    <div class="protocol">
+
+      <div class="protocol-title">
+        PROTOKÓŁ
+      </div>
+
+      <div class="protocol-line">
+        <span class="protocol-label">Numer:</span>
+        <span id="outNumber">—</span>
+      </div>
+
+      <div class="protocol-line">
+        <span class="protocol-label">Data:</span>
+        <span id="outDate">—</span>
+      </div>
+
+      <div class="protocol-line">
+        <span class="protocol-label">Miejsce:</span>
+        <span id="outPlace">—</span>
+      </div>
+
+      <div class="protocol-line">
+        <span class="protocol-label">Osoba / firma:</span>
+        <span id="outPerson">—</span>
+      </div>
+
+      <div class="protocol-line">
+        <span class="protocol-label">Przedmiot:</span>
+        <span id="outSubject">—</span>
+      </div>
+
+      <div style="margin-top:20px;">
+        <strong>Opis / uwagi:</strong>
+
+        <div class="protocol-description" id="outDescription">
+          —
+        </div>
+      </div>
+
+      <div id="outStatus" class="status">
+        —
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:40px;
+        margin-top:70px;
+      ">
+        <div style="text-align:center;">
+          __________________________
+          <br>
+          <small>Podpis sporządzającego</small>
+        </div>
+
+        <div style="text-align:center;">
+          __________________________
+          <br>
+          <small>Podpis osoby zatwierdzającej</small>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="buttons">
+      <button class="primary" onclick="window.print()">
+        Drukuj / Zapisz PDF
+      </button>
+
+      <button class="secondary" onclick="copyProtocol()">
+        Kopiuj tekst
+      </button>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Protokół • gotowy do wydruku
+  </div>
+
+</div>
+
+<script>
+
+  // Ustaw dzisiejszą datę
+  document.getElementById("date").valueAsDate = new Date();
+
+
+  function generateProtocol() {
+
+    const number = document.getElementById("number").value.trim();
+    const date = document.getElementById("date").value;
+    const place = document.getElementById("place").value.trim();
+    const person = document.getElementById("person").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const accepted = document.getElementById("accepted").checked;
+
+    document.getElementById("outNumber").textContent =
+      number || "—";
+
+    document.getElementById("outDate").textContent =
+      date ? formatDate(date) : "—";
+
+    document.getElementById("outPlace").textContent =
+      place || "—";
+
+    document.getElementById("outPerson").textContent =
+      person || "—";
+
+    document.getElementById("outSubject").textContent =
+      subject || "—";
+
+    document.getElementById("outDescription").textContent =
+      description || "Brak dodatkowych uwag.";
+
+    const status = document.getElementById("outStatus");
+
+    if (accepted) {
+      status.textContent = "STATUS: PROTOKÓŁ ZAAKCEPTOWANY";
+      status.className = "status ok";
+    } else {
+      status.textContent = "STATUS: PROTOKÓŁ NIEZAAKCEPTOWANY";
+      status.className = "status bad";
+    }
+
+    document.getElementById("result").classList.add("show");
+
+    // Zapamiętaj dane
+    localStorage.setItem("protocolData", JSON.stringify({
+      number,
+      date,
+      place,
+      person,
+      subject,
+      description,
+      accepted
+    }));
+  }
+
+
+  function formatDate(date) {
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) {
+      return date;
+    }
+
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+  }
+
+
+  function clearForm() {
+
+    document.getElementById("number").value = "";
+    document.getElementById("place").value = "";
+    document.getElementById("person").value = "";
+    document.getElementById("subject").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("accepted").checked = false;
+
+    document.getElementById("date").valueAsDate = new Date();
+
+    document.getElementById("result").classList.remove("show");
+
+    localStorage.removeItem("protocolData");
+  }
+
+
+  function copyProtocol() {
+
+    const text = `
+PROTOKÓŁ
+
+Numer: ${document.getElementById("outNumber").textContent}
+Data: ${document.getElementById("outDate").textContent}
+Miejsce: ${document.getElementById("outPlace").textContent}
+Osoba / firma: ${document.getElementById("outPerson").textContent}
+Przedmiot: ${document.getElementById("outSubject").textContent}
+
+Opis / uwagi:
+${document.getElementById("outDescription").textContent}
+
+${document.getElementById("outStatus").textContent}
+`;
+
+    navigator.clipboard.writeText(text.trim())
+      .then(() => {
+        alert("Protokół został skopiowany.");
+      })
+      .catch(() => {
+        alert("Nie udało się skopiować tekstu.");
+      });
+  }
+
+
+  // Wczytaj poprzednie dane
+  window.addEventListener("load", () => {
+
+    const saved = localStorage.getItem("protocolData");
+
+    if (!saved) return;
+
+    try {
+
+      const data = JSON.parse(saved);
+
+      document.getElementById("number").value = data.number || "";
+      document.getElementById("date").value = data.date || "";
+      document.getElementById("place").value = data.place || "";
+      document.getElementById("person").value = data.person || "";
+      document.getElementById("subject").value = data.subject || "";
+      document.getElementById("description").value = data.description || "";
+      document.getElementById("accepted").checked = !!data.accepted;
+
+    } catch (error) {
+      console.log("Nie udało się wczytać zapisanych danych.");
+    }
+
+  });
+
+</script>
+
+</body>
+</html>
